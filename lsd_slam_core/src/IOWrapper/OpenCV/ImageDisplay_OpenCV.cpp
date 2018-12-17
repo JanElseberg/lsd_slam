@@ -2,7 +2,7 @@
 * This file is part of LSD-SLAM.
 *
 * Copyright 2013 Jakob Engel <engelj at in dot tum dot de> (Technical University of Munich)
-* For more information see <http://vision.in.tum.de/lsdslam> 
+* For more information see <http://vision.in.tum.de/lsdslam>
 *
 * LSD-SLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -64,12 +64,12 @@ void displayThreadLoop()
 			{
 				if(openWindows.find(displayQueue.back().name) == openWindows.end())
 				{
-					cv::namedWindow(displayQueue.back().name, cv::WINDOW_NORMAL);
-					cv::resizeWindow(displayQueue.back().name, displayQueue.back().img.cols, displayQueue.back().img.rows);
-					openWindows.insert(displayQueue.back().name);
+					//cv::namedWindow(displayQueue.back().name, cv::WINDOW_NORMAL);
+					//cv::resizeWindow(displayQueue.back().name, displayQueue.back().img.cols, displayQueue.back().img.rows);
+					//openWindows.insert(displayQueue.back().name);
 				}
 			}
-			cv::imshow(displayQueue.back().name, displayQueue.back().img);
+			//cv::imshow(displayQueue.back().name, displayQueue.back().img);
 			displayQueue.pop_back();
 		}
 	}
@@ -104,12 +104,12 @@ void displayImage(const char* windowName, const cv::Mat& image, bool autoSize)
 		{
 			if(openWindows.find(windowName) == openWindows.end())
 			{
-				cv::namedWindow(windowName, cv::WINDOW_NORMAL);
-				cv::resizeWindow(windowName, image.cols, image.rows);
-				openWindows.insert(windowName);
+				//cv::namedWindow(windowName, cv::WINDOW_NORMAL);
+				//cv::resizeWindow(windowName, image.cols, image.rows);
+				//openWindows.insert(windowName);
 			}
 		}
-		cv::imshow(windowName, image);
+		//cv::imshow(windowName, image);
 	}
 	//cv::waitKey(1);
 }
