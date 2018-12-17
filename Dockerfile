@@ -18,6 +18,13 @@ RUN source ~/rosbuild_ws/setup.bash && \
 	git clone https://github.com/JanElseberg/lsd_slam.git lsd_slam && \
 	rosmake lsd_slam
 
+WORKDIR /src
+
+COPY run.sh /src/run.sh
+
+ENTRYPOINT ["~/rosbuild_ws/setup.bash"]
+CMD ["/src/run.sh"]
+
 #RUN /bin/sh -c ""
 #	#echo "source ~/rosbuild_ws/setup.bash" >> ~/.bashrc && \
 #	#cat ~/rosbuild_ws/setup.bash && \
