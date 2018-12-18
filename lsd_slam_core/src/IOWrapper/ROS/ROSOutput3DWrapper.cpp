@@ -69,6 +69,7 @@ ROSOutput3DWrapper::~ROSOutput3DWrapper()
 
 void ROSOutput3DWrapper::publishKeyframe(Frame* f)
 {
+	/*
 	lsd_slam_viewer::keyframeMsg fMsg;
 
 
@@ -109,6 +110,7 @@ void ROSOutput3DWrapper::publishKeyframe(Frame* f)
 	}
 
 	keyframe_publisher.publish(fMsg);
+	*/
 }
 
 void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
