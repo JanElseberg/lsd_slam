@@ -25,6 +25,7 @@
 
 #include "sophus.hpp"
 #include "so3.hpp"
+#include <string>
 
 ////////////////////////////////////////////////////////////////////////////
 // Forward Declarations / typedefs
