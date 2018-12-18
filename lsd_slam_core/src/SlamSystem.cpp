@@ -767,6 +767,7 @@ bool SlamSystem::doMappingIteration()
 	// set mappingFrame
 	if(trackingIsGood)
 	{
+		printf("MT tracking good\n");
 		if(!doMapping)
 		{
 			//printf("tryToChange refframe, lastScore %f!\n", lastTrackingClosenessScore);
@@ -782,6 +783,7 @@ bool SlamSystem::doMappingIteration()
 
 		if (createNewKeyFrame)
 		{
+			printf("MT creating new KF\n");
 			finishCurrentKeyframe();
 			changeKeyframe(false, true, 1.0f);
 
@@ -791,18 +793,21 @@ bool SlamSystem::doMappingIteration()
 		}
 		else
 		{
+			printf("MT update KF\n");
 			bool didSomething = updateKeyframe();
 
 			if (displayDepthMap || depthMapScreenshotFlag)
 				debugDisplayDepthMap();
 			if(!didSomething)
 				return false;
+			printf("MT did nothing\n");
 		}
 
 		return true;
 	}
 	else
 	{
+		printf("MT tracking bad\n");
 		// invalidate map if it was valid.
 		if(map->isValid())
 		{
@@ -813,15 +818,17 @@ bool SlamSystem::doMappingIteration()
 
 			map->invalidate();
 		}
+		printf("MT invalidated map\n");
 
 		// start relocalizer if it isnt running already
 		if(!relocalizer.isRunning)
 			relocalizer.start(keyFrameGraph->keyframesAll);
 
+		printf("MT restarted\n");
 		// did we find a frame to relocalize with?
 		if(relocalizer.waitResult(50))
 			takeRelocalizeResult();
-
+		printf("MT result\n");
 
 		return true;
 	}
