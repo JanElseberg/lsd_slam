@@ -397,13 +397,18 @@ void SlamSystem::finishCurrentKeyframe()
 	if(enablePrintDebugInfo && printThreadingInfo)
 		printf("FINALIZING KF %d\n", currentKeyFrame->id());
 
+	printf("SS finalize\n");
 	map->finalizeKeyFrame();
+	printf("SS finalized\n");
 
 	if(SLAMEnabled)
 	{
+		printf("SS import\n");
 		mappingTrackingReference->importFrame(currentKeyFrame.get());
+		printf("SS import done\n");
 		currentKeyFrame->setPermaRef(mappingTrackingReference);
 		mappingTrackingReference->invalidate();
+		printf("SS ref inv\n");
 
 		if(currentKeyFrame->idxInKeyframes < 0)
 		{
@@ -419,8 +424,10 @@ void SlamSystem::finishCurrentKeyframe()
 			newKeyFrameCreatedSignal.notify_all();
 			newKeyFrameMutex.unlock();
 		}
+		printf("SS if done\n");
 	}
 
+	printf("SS publish\n");
 	if(outputWrapper!= 0)
 		outputWrapper->publishKeyframe(currentKeyFrame.get());
 }
@@ -510,18 +517,25 @@ void SlamSystem::changeKeyframe(bool noCreate, bool force, float maxScore)
 	std::shared_ptr<Frame> newKeyframeCandidate = latestTrackedFrame;
 	if(doKFReActivation && SLAMEnabled)
 	{
+		printf("SS cKF if 1\n");
 		struct timeval tv_start, tv_end;
 		gettimeofday(&tv_start, NULL);
 		newReferenceKF = trackableKeyFrameSearch->findRePositionCandidate(newKeyframeCandidate.get(), maxScore);
 		gettimeofday(&tv_end, NULL);
 		msFindReferences = 0.9*msFindReferences + 0.1*((tv_end.tv_sec-tv_start.tv_sec)*1000.0f + (tv_end.tv_usec-tv_start.tv_usec)/1000.0f);
 		nFindReferences++;
+		printf("SS cKF if 1 end\n");
 	}
 
+	printf("SS cKF if 2\n");
 	if(newReferenceKF != 0)
+	{
+		printf("SS cKF if 2 if\n");
 		loadNewCurrentKeyframe(newReferenceKF);
+	}
 	else
 	{
+		printf("SS cKF if 2 else\n");
 		if(force)
 		{
 			if(noCreate)
@@ -530,11 +544,14 @@ void SlamSystem::changeKeyframe(bool noCreate, bool force, float maxScore)
 				nextRelocIdx = -1;
 				printf("mapping is disabled & moved outside of known map. Starting Relocalizer!\n");
 			}
-			else
+			else {
+				printf("SS cKF if 2 if else\n");
 				createNewCurrentKeyframe(newKeyframeCandidate);
+			}
 		}
 	}
 
+	printf("SS cKF DONE\n");
 
 	createNewKeyFrame = false;
 }
@@ -783,9 +800,11 @@ bool SlamSystem::doMappingIteration()
 
 		if (createNewKeyFrame)
 		{
-			printf("MT creating new KF\n");
+			printf("MT finish KF\n");
 			finishCurrentKeyframe();
+			printf("MT change KF\n");
 			changeKeyframe(false, true, 1.0f);
+			printf("MT KF\n");
 
 
 			if (displayDepthMap || depthMapScreenshotFlag)
