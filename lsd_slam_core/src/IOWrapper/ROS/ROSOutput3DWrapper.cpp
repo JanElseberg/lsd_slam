@@ -138,6 +138,7 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 
 
 	printf("pTF 2\n");
+	/*
 	SE3 camToWorld = se3FromSim3(kf->getScaledCamToWorld());
 
 	geometry_msgs::PoseStamped pMsg;
@@ -164,6 +165,8 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 	pose_publisher.publish(pMsg);
 
     std::cout << fMsg.time << " " << camToWorld.translation()[0] << " " << camToWorld.translation()[1] << "  " << camToWorld.translation()[2] << std::endl;
+	*/
+    std::cout << fMsg.time << sstd::endl;
 }
 
 
