@@ -2,7 +2,7 @@
 * This file is part of LSD-SLAM.
 *
 * Copyright 2013 Jakob Engel <engelj at in dot tum dot de> (Technical University of Munich)
-* For more information see <http://vision.in.tum.de/lsdslam> 
+* For more information see <http://vision.in.tum.de/lsdslam>
 *
 * LSD-SLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ SlamSystem::SlamSystem(int w, int h, Eigen::Matrix3f K, bool enableSLAM)
 	createNewKeyFrame = false;
 
 	map =  new DepthMap(w,h,K);
-	
+
 	newConstraintAdded = false;
 	haveUnmergedOptimizationOffset = false;
 
@@ -266,7 +266,7 @@ void SlamSystem::finalize()
 void SlamSystem::constraintSearchThreadLoop()
 {
 	printf("Started  constraint search thread!\n");
-	
+
 	boost::unique_lock<boost::mutex> lock(newKeyFrameMutex);
 	int failedToRetrack = 0;
 
@@ -889,9 +889,11 @@ void SlamSystem::randomInit(uchar* image, double timeStamp, int id)
 
 void SlamSystem::trackFrame(uchar* image, unsigned int frameID, bool blockUntilMapped, double timestamp)
 {
+	printf("tF 1: start \n");
 	// Create new frame
 	std::shared_ptr<Frame> trackingNewFrame(new Frame(frameID, width, height, K, timestamp, image));
 
+	printf("tF 2: check tracking \n");
 	if(!trackingIsGood)
 	{
 		relocalizer.updateCurrentFrame(trackingNewFrame);
@@ -902,6 +904,7 @@ void SlamSystem::trackFrame(uchar* image, unsigned int frameID, bool blockUntilM
 		return;
 	}
 
+	printf("tF 3: check good \n");
 	currentKeyFrameMutex.lock();
 	bool my_createNewKeyframe = createNewKeyFrame;	// pre-save here, to make decision afterwards.
 	if(trackingReference->keyframe != currentKeyFrame.get() || currentKeyFrame->depthHasBeenUpdatedFlag)
@@ -914,6 +917,7 @@ void SlamSystem::trackFrame(uchar* image, unsigned int frameID, bool blockUntilM
 	FramePoseStruct* trackingReferencePose = trackingReference->keyframe->pose;
 	currentKeyFrameMutex.unlock();
 
+	printf("tF 4: DO TRACKING \n");
 	// DO TRACKING & Show tracking result.
 	if(enablePrintDebugInfo && printThreadingInfo)
 		printf("TRACKING %d on %d\n", trackingNewFrame->id(), trackingReferencePose->frameID);
@@ -926,15 +930,18 @@ void SlamSystem::trackFrame(uchar* image, unsigned int frameID, bool blockUntilM
 
 
 
+	printf("tF 5: frame2ref computed \n");
 	struct timeval tv_start, tv_end;
 	gettimeofday(&tv_start, NULL);
 
+	printf("tF 6: compute poseUpdate \n");
 	SE3 newRefToFrame_poseUpdate = tracker->trackFrame(
 			trackingReference,
 			trackingNewFrame.get(),
 			frameToReference_initialEstimate);
 
 
+	printf("tF 7: computed poseUpdate \n");
 	gettimeofday(&tv_end, NULL);
 	msTrackFrame = 0.9*msTrackFrame + 0.1*((tv_end.tv_sec-tv_start.tv_sec)*1000.0f + (tv_end.tv_usec-tv_start.tv_usec)/1000.0f);
 	nTrackFrame++;
@@ -943,6 +950,7 @@ void SlamSystem::trackFrame(uchar* image, unsigned int frameID, bool blockUntilM
 	tracking_lastUsage = tracker->pointUsage;
 	tracking_lastGoodPerBad = tracker->lastGoodCount / (tracker->lastGoodCount + tracker->lastBadCount);
 	tracking_lastGoodPerTotal = tracker->lastGoodCount / (trackingNewFrame->width(SE3TRACKING_MIN_LEVEL)*trackingNewFrame->height(SE3TRACKING_MIN_LEVEL));
+	printf("tF 8: tracking updated \n");
 
 
 	if(manualTrackingLossIndicated || tracker->diverged || (keyFrameGraph->keyframesAll.size() > INITIALIZATION_PHASE_COUNT && !tracker->trackingWasGood))
@@ -983,6 +991,7 @@ void SlamSystem::trackFrame(uchar* image, unsigned int frameID, bool blockUntilM
 		outputWrapper->publishDebugInfo(data);
 	}
 
+	printf("tF 9: adding frame \n");
 	keyFrameGraph->addFrame(trackingNewFrame.get());
 
 
@@ -993,6 +1002,7 @@ void SlamSystem::trackFrame(uchar* image, unsigned int frameID, bool blockUntilM
 	}
 
 
+	printf("tF 10: Keyframe selection \n");
 	// Keyframe selection
 	latestTrackedFrame = trackingNewFrame;
 	if (!my_createNewKeyframe && currentKeyFrame->numMappedOnThisTotal > MIN_NUM_MAPPED)
@@ -1020,6 +1030,7 @@ void SlamSystem::trackFrame(uchar* image, unsigned int frameID, bool blockUntilM
 	}
 
 
+	printf("tF 11: mutex \n");
 	unmappedTrackedFramesMutex.lock();
 	if(unmappedTrackedFrames.size() < 50 || (unmappedTrackedFrames.size() < 100 && trackingNewFrame->getTrackingParent()->numMappedOnThisTotal < 10))
 		unmappedTrackedFrames.push_back(trackingNewFrame);
@@ -1037,6 +1048,7 @@ void SlamSystem::trackFrame(uchar* image, unsigned int frameID, bool blockUntilM
 		}
 		lock.unlock();
 	}
+	printf("tF 12: done \n");
 }
 
 
@@ -1606,7 +1618,7 @@ bool SlamSystem::optimizationIteration(int itsPerTry, float minChange)
 
 	// Do the optimization. This can take quite some time!
 	int its = keyFrameGraph->optimize(itsPerTry);
-	
+
 
 	// save the optimization result.
 	poseConsistencyMutex.lock_shared();
