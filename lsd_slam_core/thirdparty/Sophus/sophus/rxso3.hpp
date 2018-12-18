@@ -686,7 +686,7 @@ public:
   inline explicit
   RxSO3Group(const Quaternion<Scalar> & quat) : quaternion_(quat) {
     if(quaternion_.squaredNorm() <= SophusConstants<Scalar>::epsilon()) {
-      throw ScaleNotPositive("in ctr() 3");
+      throw ScaleNotPositive("in ctr() 3 " + quaternion_.data()[0] + " " + quaternion_.data()[1] + " " + quaternion_.data()[2] + " " + quaternion_.data()[3]  );
     }
   }
 
