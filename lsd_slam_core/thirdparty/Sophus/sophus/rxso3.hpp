@@ -76,7 +76,7 @@ public:
   ScaleNotPositive ()
     : SophusException("Scale factor is not positive") {
   }
-  ScaleNotPositive (std::string &t)
+  ScaleNotPositive (const std::string &t)
     : SophusException("Scale factor is not positive: " + t) {
   }
 };
