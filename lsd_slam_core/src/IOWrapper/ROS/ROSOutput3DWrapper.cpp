@@ -166,7 +166,7 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 
     std::cout << fMsg.time << " " << camToWorld.translation()[0] << " " << camToWorld.translation()[1] << "  " << camToWorld.translation()[2] << std::endl;
 	*/
-    std::cout << fMsg.time << sstd::endl;
+    std::cout << fMsg.time << std::endl;
 }
 
 
