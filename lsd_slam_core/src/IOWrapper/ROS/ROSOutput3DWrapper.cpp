@@ -113,7 +113,9 @@ void ROSOutput3DWrapper::publishKeyframe(Frame* f)
 
 void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 {
+	printf("pTF 1\n");
 	lsd_slam_viewer::keyframeMsg fMsg;
+
 
 
 	fMsg.id = kf->id();
@@ -121,6 +123,7 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 	fMsg.isKeyframe = false;
 
 
+	printf("pTF 2\n");
 	memcpy(fMsg.camToWorld.data(),kf->getScaledCamToWorld().cast<float>().data(),sizeof(float)*7);
 	fMsg.fx = kf->fx(publishLvl);
 	fMsg.fy = kf->fy(publishLvl);
@@ -134,6 +137,7 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 	liveframe_publisher.publish(fMsg);
 
 
+	printf("pTF 2\n");
 	SE3 camToWorld = se3FromSim3(kf->getScaledCamToWorld());
 
 	geometry_msgs::PoseStamped pMsg;
@@ -154,6 +158,7 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 		pMsg.pose.orientation.w *= -1;
 	}
 
+	printf("pTF 3\n");
 	pMsg.header.stamp = ros::Time(kf->timestamp());
 	pMsg.header.frame_id = "world";
 	pose_publisher.publish(pMsg);
